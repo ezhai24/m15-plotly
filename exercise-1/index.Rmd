@@ -1,0 +1,31 @@
+Here is a graphical depiction of US 2011 agricultural statistics. The darker the state, the more produce that
+particular state exports.
+
+```{r, echo=FALSE}
+library(plotly, warn.conflicts = FALSE, quietly = TRUE)
+
+us.agriculture <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv")
+us.agriculture$hover <- with(us.agriculture, paste(state, '<br>', "Beef", beef, "Dairy", dairy, "<br>", "Fruits",
+                           total.fruits, "Veggies", total.veggies, "<br>", "Wheat", wheat, "Corn", corn))
+
+l <- list(color = toRGB("white"), width = 2)
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
+
+p <- plot_geo(us.agriculture, locationmode = 'USA-states') %>%
+  add_trace(
+    z = ~total.exports, text = ~hover, locations = ~code,
+    color = ~total.exports, colors = 'Purples'
+  ) %>%
+  colorbar(title = "Millions USD") %>%
+  layout(
+    title = '2011 US Agriculture Exports by State<br>(Hover for breakdown)',
+    geo = g
+  )
+
+p
+```
